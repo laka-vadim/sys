@@ -28,6 +28,7 @@ void displayMaxPowerThing(struct thing* things, int count) {
         }
     }
 
+    printf("Select by max power\n");
     for (int i = 0; i < count; i++) {
         if (things[i].power == max_power) {
             printf("%s\t%s\t%d\n", things[i].name, things[i].type, things[i].power);
@@ -36,6 +37,7 @@ void displayMaxPowerThing(struct thing* things, int count) {
 };
 
 void displayPowerRange(struct thing* things, int count, int minPower, int maxPower) {
+    printf("Select in range from %d to %d\n", minPower, maxPower);
     for (int i = 0; i < count; i++) {
         if (things[i].power >= minPower && things[i].power <= maxPower) {
             printf("%s\t%s\t%d\n", things[i].name, things[i].type, things[i].power);
