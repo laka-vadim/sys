@@ -1,11 +1,10 @@
 #include <stdio.h>
 
-#define MAX_NAME_LEN 10
-#define MAX_TYPE_LEN 10
+#define TEXTFIELD_LENGTH 10
 
 struct thing {
-  char name[MAX_NAME_LEN];
-  char type[MAX_TYPE_LEN];
+  char name[TEXTFIELD_LENGTH];
+  char type[TEXTFIELD_LENGTH];
   int power;
 };
 
