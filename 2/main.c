@@ -1,61 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "structManipulation.h"
 
-struct thing {
-  char name[10];
-  char type[10];
-  int power;
-};
+int main (int argc, char *argv[])
+{
+  int count = 0;
+  struct thing things[5];
 
-void addThing(struct thing* things, int* count, char name[10], char type[10], int power) {
-    struct thing newThing;
+  add_thing (things, &count, "firstN", "firstT", 10);
+  add_thing (things, &count, "secondN", "secondT", 20);
+  add_thing (things, &count, "thirdN", "thirdT", 30);
+  add_thing (things, &count, "fourthN", "fourthT", 40);
+  add_thing (things, &count, "fifthN", "fifthT", 40);
 
-    strcpy(newThing.name, name);
-    strcpy(newThing.type, type);
-    newThing.power = power;
-
-    things[*count] = newThing;
-    (*count)++;
-};
-
-void displayMaxPowerThing(struct thing* things, int count) {
-    int max_power = 0;
-
-    for (int i = 0; i < count; i++) {
-        if (things[i].power > max_power) {
-            max_power = things[i].power;
-        }
-    }
-
-    printf("Select by max power\n");
-    for (int i = 0; i < count; i++) {
-        if (things[i].power == max_power) {
-            printf("%s\t%s\t%d\n", things[i].name, things[i].type, things[i].power);
-        }
-    }
-};
-
-void displayPowerRange(struct thing* things, int count, int minPower, int maxPower) {
-    printf("Select in range from %d to %d\n", minPower, maxPower);
-    for (int i = 0; i < count; i++) {
-        if (things[i].power >= minPower && things[i].power <= maxPower) {
-            printf("%s\t%s\t%d\n", things[i].name, things[i].type, things[i].power);
-        }
-    }
-}
-
-int main(int argc, char *argv[]) {
-    int count = 0;
-    struct thing things[5];
-
-    addThing(things, &count, "firstN", "firstT", 10);
-    addThing(things, &count, "secondN", "secondT", 20);
-    addThing(things, &count, "thirdN", "thirdT", 30);
-    addThing(things, &count, "fourthN", "fourthT", 40);
-    addThing(things, &count, "fifthN", "fifthT", 40);
-
-    displayMaxPowerThing(things, count);
-    printf("-----------\n");
-    displayPowerRange(things, count, 20, 50);
+  display_max_power_thing (things, count);
+  printf ("-----------\n");
+  display_power_range (things, count, 20, 50);
 }
