@@ -1,2 +1,2 @@
 all:
-	gcc main.c -o programm
+	gcc -pthread main.c -o programm

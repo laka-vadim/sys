@@ -3,68 +3,73 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define NUM_PHILOSOPHERS 5
-#define NUM_FORKS 5
+#define THREADS_COUNT 5
+#define COMMON_RESOURCES 5
 
-pthread_mutex_t g_forks[NUM_FORKS];
+#define RANDOM_RANGE_MINIMUM 5
+#define RANDOM_RANGE_MAXIMUM 20
+
+pthread_mutex_t g_forks[COMMON_RESOURCES];
 pthread_mutex_t g_table_lock;
 
 /// @brief Thread is imitation of philosopher appear 
 /// @param arg Identifier like philosopher name
 /// @return
-void * philosopher (void *arg)
+void* philosopher(void* arg)
 {
-  int id = *(int *)arg;
+  int id = *(int*)arg;
   int left_fork = id;
-  int right_fork = (id + 1) % NUM_FORKS;
+  int right_fork = (id + 1) % COMMON_RESOURCES;
+  const int rand_delimiter = (RANDOM_RANGE_MAXIMUM - RANDOM_RANGE_MINIMUM + 1)
+                           + RANDOM_RANGE_MINIMUM;
 
   while (1)
-    {
-      sleep (rand () % 16 + 5);
-      printf ("Philosopher on chair %d\n", id);
+  {
+    sleep(rand() % rand_delimiter);
+    printf("Philosopher on chair %d\n", id);
 
-      pthread_mutex_lock (&g_table_lock);
-      pthread_mutex_lock (&g_forks[left_fork]);
-      pthread_mutex_lock (&g_forks[right_fork]);
-      pthread_mutex_unlock (&g_table_lock);
+    pthread_mutex_lock(&g_table_lock);
+    pthread_mutex_lock(&g_forks[left_fork]);
+    pthread_mutex_lock(&g_forks[right_fork]);
+    pthread_mutex_unlock(&g_table_lock);
 
-      printf ("Philosopher on chair %d is eating by fork %d-%d\n", id,
-              left_fork, right_fork);
-      sleep (10);
+    printf("Philosopher on chair %d is eating by fork %d-%d\n", id,
+            left_fork, right_fork);
+    sleep(10);
 
-      pthread_mutex_unlock (&g_forks[right_fork]);
-      pthread_mutex_unlock (&g_forks[left_fork]);
+    pthread_mutex_unlock(&g_forks[right_fork]);
+    pthread_mutex_unlock(&g_forks[left_fork]);
 
-      printf ("Philosopher on chair %d finish eating by fork %d-%d\n", id,
-              left_fork, right_fork);
-    }
+    printf("Philosopher on chair %d finish eating by fork %d-%d\n", id,
+            left_fork, right_fork);
+  }
 
   return NULL;
 }
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-  srand (time (NULL));
+  srand(time (NULL));
 
-  pthread_t philosophers[NUM_PHILOSOPHERS];
-  int ids[NUM_PHILOSOPHERS];
+  pthread_t philosophers[THREADS_COUNT];
+  int ids[THREADS_COUNT];
 
-  for (int i = 0; i < NUM_FORKS; i++)
-    {
-      pthread_mutex_init (&g_forks[i], NULL);
-    }
-  pthread_mutex_init (&g_table_lock, NULL);
+  for (int i = 0; i < COMMON_RESOURCES; i++)
+  {
+    pthread_mutex_init(&g_forks[i], NULL);
+  }
+  pthread_mutex_init(&g_table_lock, NULL);
 
-  for (int i = 0; i < NUM_PHILOSOPHERS; i++)
-    {
-      ids[i] = i;
-      pthread_create (&philosophers[i], NULL, philosopher, &ids[i]);
-    }
+  for (int i = 0; i < THREADS_COUNT; i++)
+  {
+    ids[i] = i;
+    pthread_create(&philosophers[i], NULL, philosopher, &ids[i]);
+  }
 
-  for (int i = 0; i < NUM_PHILOSOPHERS; i++)
-    {
-      pthread_join (philosophers[i], NULL);
-    }
+  for (int i = 0; i < THREADS_COUNT; i++)
+  {
+    pthread_join(philosophers[i], NULL);
+  }
 
   return 0;
 }
