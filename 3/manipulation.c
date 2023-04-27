@@ -1,10 +1,12 @@
 #include "manipulation.h"
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <unistd.h>
 
-void add_thing(FILE* file)
+void add_thing(int file_desc)
 {
   struct thing new_thing;
 
@@ -17,54 +19,68 @@ void add_thing(FILE* file)
   printf("Enter power: ");
   scanf("%d", &new_thing.power);
 
-  fwrite(&new_thing, sizeof (struct thing), 1, file);
+  ssize_t write_status = write(file_desc, &new_thing, sizeof(struct thing));
+
+  if(write_status == -1)
+  {
+    perror("write");
+  }
+  printf("Record created successfully\n");
 };
 
-void display_all_things(FILE* file)
+void display_all_things(int file_desc)
 {
-  struct thing curr_thing;
-  int index = 0;
+  struct stat file_info;
+  fstat(file_desc, &file_info);
 
-  fseek(file, 0, SEEK_SET);
+  int records_amount = file_info.st_size / sizeof(struct thing);
+  struct thing* things = malloc(file_info.st_size);
+
+  read(file_desc, things, file_info.st_size);
 
   printf("All things in file:\n");
 
-  while (fread(&curr_thing, sizeof (struct thing), 1, file))
+  for(int index = 0; index < records_amount; ++index)
   {
-    printf("%d. %s\t%s\t%d\n", index, curr_thing.name, curr_thing.type,
-            curr_thing.power);
-    index++;
+    printf("%d. %s\t%s\t%d\n", index, things[index].name, things[index].type,
+             things[index].power);
   }
 };
 
-void remove_thing(FILE* file)
+void edit_thing(int file_desc)
 {
   int index;
-  struct thing curr_thing, next_thing;
+
+  printf("Enter the index of the thing to edit: ");
+  scanf("%d", &index);
+
+  lseek(file_desc, sizeof(struct thing) * index, SEEK_SET);
+  add_thing(file_desc);
+  printf("Record successfully edited\n");
+};
+
+void remove_thing(int file_desc)
+{
+  int index;
 
   printf("Enter the index of the thing to remove: ");
   scanf("%d", &index);
 
-  fseek(file, index * sizeof (struct thing), SEEK_SET);
+  struct stat file_info;
+  fstat(file_desc, &file_info);
 
-  if (fread(&curr_thing, sizeof (struct thing), 1, file))
-  {
-    fseek(file, (index + 1) * sizeof (struct thing), SEEK_SET);
+  int records_amount = file_info.st_size / sizeof(struct thing);
+  int records_to_rewrite = records_amount - index - 1;
+  int rewriting_bytes = records_to_rewrite * sizeof(struct thing);
 
-    while (fread(&next_thing, sizeof (struct thing), 1, file))
-    {
-      fseek(file, -2 * sizeof (struct thing), SEEK_CUR);
-      fwrite(&next_thing, sizeof (struct thing), 1, file);
-      fseek(file, sizeof (struct thing), SEEK_CUR);
-    }
+  struct thing* things = malloc(rewriting_bytes);
+  lseek(file_desc, (index + 1) * sizeof (struct thing), SEEK_SET);
+  read(file_desc, things, rewriting_bytes);
 
-    int num_things = ftell(file) / sizeof (struct thing);
-    ftruncate(fileno(file), (num_things - 1) * sizeof (struct thing));
+  lseek(file_desc, index * sizeof (struct thing), SEEK_SET);
+  write(file_desc, things, rewriting_bytes);
 
-    printf("Thing removed successfully.\n");
-  }
-  else
-  {
-    printf("Invalid index.\n");
-  }
+  ftruncate(file_desc, (records_amount - 1) * sizeof (struct thing));
+
+  printf("Thing removed successfully.\n");
 }

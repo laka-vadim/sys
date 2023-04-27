@@ -8,6 +8,7 @@ struct thing {
   int power;
 };
 
-void add_thing(FILE* file);
-void display_all_things(FILE* file);
-void remove_thing(FILE* file);
+void add_thing(int file_desc);
+void display_all_things(int file_desc);
+void edit_thing(int file_desc);
+void remove_thing(int file_desc);
