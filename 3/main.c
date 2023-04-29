@@ -19,6 +19,8 @@ int main(int argc, char* argv[]) {
   int choice;
   while (choice != 7)
   {
+    printf("Fixed record size is %d\n", get_record_size(file_desc));
+    printf("Fixed record amount is %d\n", get_record_amount(file_desc));
     printf("\nMenu:\n");
     printf("1. Add thing\n");
     printf("2. Display all things\n");
@@ -33,7 +35,7 @@ int main(int argc, char* argv[]) {
     switch(choice) 
     {
     case 1:
-      add_thing(file_desc);
+      add_thing(file_desc, -1);
       break;
     case 2:
       display_all_things(file_desc);
