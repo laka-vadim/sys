@@ -1,2 +1,2 @@
 all:
-	gcc main.c structManipulation.c -o programm
+	gcc main.c struct.c ui.c -o programm

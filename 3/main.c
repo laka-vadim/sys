@@ -6,7 +6,6 @@
 #include "manipulation.h"
 
 int main(int argc, char* argv[]) {
-  // FILE* file = fopen("things.dat", "ab+");
   int file_desc = open("data.dat", O_CREAT | O_RDWR, S_IRWXU);
 
   if (file_desc == -1)
@@ -15,26 +14,28 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  set_record_size(file_desc);
+
   int choice;
-  while (choice != 5)
+  while (choice != 7)
   {
     printf("\nMenu:\n");
     printf("1. Add thing\n");
     printf("2. Display all things\n");
     printf("3. Edit thing\n");
     printf("4. Remove thing\n");
-    printf("5. Exit\n");
+    printf("5. Display things by max power\n");
+    printf("6. Display things by max/min range\n");
+    printf("7. Exit\n");
     printf("Enter choice: ");
     scanf("%d", &choice);
 
     switch(choice) 
     {
     case 1:
-      lseek(file_desc, 0, SEEK_END);
       add_thing(file_desc);
       break;
     case 2:
-      lseek(file_desc, 0, SEEK_SET);
       display_all_things(file_desc);
       break;
     case 3:
@@ -44,6 +45,12 @@ int main(int argc, char* argv[]) {
       remove_thing(file_desc);
       break;
     case 5:
+      display_things_by_maxpower(file_desc);
+      break;
+    case 6:
+      display_things_in_range(file_desc);
+      break;
+    case 7:
       break;
     default:
       printf("Invalid choice.\n");

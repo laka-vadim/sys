@@ -1,26 +1,43 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "structManipulation.h"
-
-#define INITIAL_AMOUNT_OF_RECORDS 0
-#define LIMIT_OF_RECORDS 5
+#include <unistd.h>
+#include "ui.h"
 
 int main(int argc, char *argv[])
 {
-  int count = INITIAL_AMOUNT_OF_RECORDS;
-  struct thing* things = malloc(sizeof (struct thing) * LIMIT_OF_RECORDS);
+  int choice;
+  while (choice != 7)
+  {
+    int choice = show_menu();
 
-  add_thing(things, &count, "firstN", "firstT", 10);
-  add_thing(things, &count, "secondN", "secondT", 20);
-  add_thing(things, &count, "thirdN", "thirdT", 30);
-  add_thing(things, &count, "fourthN", "fourthT", 40);
-  add_thing(things, &count, "fifthN", "fifthT", 40);
+    switch(choice) 
+    {
+    case 1:
+      input_new_thing_data();
+      break;
+    case 2:
+      input_edit_thing_data();
+      break;
+    case 3:
+      input_remove_thing_data();
+      break;
+    case 4:
+      show_all_records();
+      break;
+    case 5:
+      display_max_power_thing();
+      break;
+    case 6:
+      display_by_power_in_range();
+      break;
+    case 7:
+      exit_message();
+      break;
+    default:
+      printf("Invalid choice.\n");
+    }
+  }
 
-  display_max_power_thing(things, count);
-  printf("-----------\n");
-  display_power_range(things, count, 20, 50);
-
-  free(things);
   return 0;
 }
